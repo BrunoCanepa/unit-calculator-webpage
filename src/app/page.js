@@ -2,13 +2,51 @@
 
 import Image from "next/image";
 import AreaSelector from "./components/areaSelector";
+import UnitSelector from "./components/UnitSelector";
+import ValueInput from "./components/ValueInput";
+import ValueOutput from "./components/ValueOutput";
+import { calFromUnit, calToUnit, conversor } from "./UnitConversor";
+import { Button } from "@mui/material";
+import { useState } from "react";
 
 export default function Home() {
+
+  const [areaSeleccionada, setAreaSeleccionada] = useState(null);
+  const [selectedValue, setSelectedValue] = useState(0);
+  const [fromUnit, setFromUnit] = useState(null);
+  const [toUnit, setToUnit] = useState(null);
+  const [calculatedValue, setCalculatedValue] = useState(0);
+
+
+  function handleSelectValue(value) {
+    setSelectedValue(value)
+  }
+
+  function handleSelectFromUnit(value) {
+    setFromUnit(value.props.value)
+  }
+
+  function handleSelectToUnit(value) {
+    setToUnit(value.props.value)
+  }
+
+  function handleCalculateValue() {
+    setCalculatedValue(calFromUnit(calToUnit(selectedValue, fromUnit, conversor[areaSeleccionada]), toUnit, conversor[areaSeleccionada]).toLocaleString('de-DE'))
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <AreaSelector></AreaSelector>
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
 
+
+      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        <AreaSelector onSelectArea={setAreaSeleccionada} />
+        De
+        <UnitSelector area={areaSeleccionada} onSelect={handleSelectFromUnit} />
+        A
+        <UnitSelector area={areaSeleccionada} onSelect={handleSelectToUnit} />
+        <ValueInput placeholder="Valor a calcular" onSelectValue={handleSelectValue} />
+        <Button onClick={handleCalculateValue} color="white" >Calcular</Button>
+        <ValueOutput value={calculatedValue} />
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
         <a
